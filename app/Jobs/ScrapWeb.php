@@ -48,7 +48,6 @@ class ScrapWeb implements ShouldQueue
 
             $page = $browser->newPage();
             $page->goto($this->web_url);
-            $elements = $page->querySelectorAll($this->selector);
 
             // Get the "viewport" of the page, as reported by the page.
             $value = $page->evaluate(JsFunction::createWithParameters(['selector'])
@@ -58,8 +57,7 @@ class ScrapWeb implements ShouldQueue
 
                                         for(let i = 0; i < elements.length; i++)
                                         {
-                                            returnList.push(elements[i].innerHTML.trim());
-
+                                           returnList.push(elements[i].innerHTML.trim());
                                         }
                                         return returnList;
                                 ")->scope(['selector' => $this->selector]));
@@ -70,15 +68,5 @@ class ScrapWeb implements ShouldQueue
                 'scrape_result' => json_encode($value)
             ]);
             $browser->close();
-                // StoreScrape::dispatch($this->web_url, $this->selector, $elements);
-
-        // } catch (\Throwable $th) {
-        //     $message = "not found";
-        //     return [
-        //         'elements' => [],
-        //         'message' => $message
-        //     ];
-        // }
-
     }
 }
