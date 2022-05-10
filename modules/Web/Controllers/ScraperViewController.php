@@ -13,6 +13,11 @@ use Modules\Models\ScrapeResult;
 
 class ScraperViewController extends Controller
 {
+
+    public function __construct()
+    {
+
+    }
     /**
      * Return the index view
      *
@@ -21,10 +26,14 @@ class ScraperViewController extends Controller
     public function index()
     {
 
+        $currentURL = Request()->getUri();
+
         $items = ScrapeResult::get()->toArray();
 
         $items = $this->paginate($items, 4);
-        $items->path(Request()->url().'');
+        $items->setPath($currentURL.'');
+        // dd($items->links()->path);
+
         // dd($items);
         return view('Scraper.index', compact('items'));
     }
@@ -32,7 +41,7 @@ class ScraperViewController extends Controller
 
     public function scrape_result($id)
     {
-        $currentURL = Request()->url();
+        $currentURL = Request()->getUri();
         // dd($currentURL);
         $data = ScrapeResult::find($id);
         $web_url = $data->web_url;
@@ -52,11 +61,12 @@ class ScraperViewController extends Controller
         // dd($final_array);
 
         $selected = $this->paginate($final_array, 5);
-        $selected->path($currentURL.'');
+        $selected->setPath($currentURL.' ');
 
         // dd($selected);
 
         // $final_data = collect($data);
+        // dd($selected->links(), $currentURL);
         return view('Scraper.scraped', compact('web_url', 'selector', 'selected'));
     }
 
@@ -70,7 +80,7 @@ class ScraperViewController extends Controller
         $offset = ($currentPage * $perPage) - $perPage;
         $itemsToShow = array_slice($items, $offset, $perPage);
 
-        return new LengthAwarePaginator($items, $total, $perPage);
+        return new LengthAwarePaginator($itemsToShow, $total, $perPage);
 
     }
 
